@@ -7,10 +7,10 @@
 extern const float playerWidth, playerHeight, playerSpeed;
 extern const float gravity, jumpSpeed;
 
-const int maxBuf{ 100 }, numStandTextures{ 12 }, numRunTextures{ 4 },
+const int numStandTextures{ 12 }, numRunTextures{ 4 },
 		  numJumpTextures{ 1 };
-const float standHitX{ 6 }, standHitY{ 9 }, runHitX{ 6 },
-			runHitY{ 9 }, jumpHitX{ 6 }, jumpHitY{ 9 };
+const float standHitX{ 6.f }, standHitY{ 9.f }, runHitX{ 6.f },
+			runHitY{ 9.f }, jumpHitX{ 6.f }, jumpHitY{ 9.f };
 
 Player::Player( float x, float y )
 {
@@ -19,7 +19,7 @@ Player::Player( float x, float y )
 	loadTextures( textures, "playerTextures.txt" );
 	sprite.setTexture( textures[0] ); numTexture = 0;
 	movement.x = 0; movement.y = 0;
-	countIndex = 0;
+	standCount = 0, runCount = 0, jumpCount = 0;
 	hitBox.x = 20; hitBox.y = 30;
 	block.x = 20 + hitBox.x; block.y = 20 + hitBox.y;
 }
@@ -51,7 +51,7 @@ void Player::update( sf::RenderWindow &window )
 		isMoving = false; }
 
 // Update Texture
-	countIndex++;
+	standCount++; runCount++; jumpCount++;
 	updateTexture( numStandTextures, numRunTextures, numJumpTextures );
 
 // Jumping
@@ -93,38 +93,38 @@ void Player::update( sf::RenderWindow &window )
 void Player::updateTexture( int numStand, int numRun, int numJump )
 {
 	int sIndex[ numStand * 2 ], rIndex[ numRun * 2 ], jIndex[ numJump * 2 ];
-	int standBuf = maxBuf / numStand, runBuf = maxBuf / numRun,
-		jumpBuf = maxBuf / numJump;
 
 	for( int i = 0; i < numStand * 2; i++ ) { sIndex[i] = i; }
 	for( int i = 0; i < numRun * 2; i++ ) { rIndex[i] = ( numStand * 2 ) + i; }
 	for( int i = 0; i < numJump * 2; i++ ) { jIndex[i] = ( numStand * 2 ) + ( numRun * 2 ) +  i; }
 	
-	if( countIndex == maxBuf ) { countIndex = 0; }
-	
+	if( standCount >= numStand * 5 ) { standCount = 0; }
+	if( runCount >= numRun * 5 ) { runCount = 0; }
+	if( jumpCount >= numJump * 5 ) { jumpCount = 0; }
+
 	if( isJumping ) {
 		if( direction ) {  
 			for( int i = 0; i < numJump; i++ )
-			{ if( countIndex < jumpBuf * ( i + 1 ) ) { numTexture = jIndex[ numJump + i ]; break; } } }
+			{ if( jumpCount < 5 * ( i + 1 ) ) { numTexture = jIndex[ numJump + i ]; break; } } }
 		else {
 			for( int i = 0; i < numJump; i++ )
-			{ if( countIndex < jumpBuf * ( i + 1 ) ) { numTexture = jIndex[ i ]; break; } } }
+			{ if( jumpCount < 5 * ( i + 1 ) ) { numTexture = jIndex[ i ]; break; } } }
 	}
 	else if( isMoving ) {
 		if( direction ) {
 			for( int i = 0; i < numRun; i++ )
-			{ if( countIndex < ( runBuf * ( i + 1 ) ) ) { numTexture = rIndex[ numRun + i ]; break; } } }
+			{ if( runCount < 5 * ( i + 1 ) ) { numTexture = rIndex[ numRun + i ]; break; } } }
 		else {
 			for( int i = 0; i < numRun; i++ )
-			{ if( countIndex < runBuf * ( i + 1 ) ) { numTexture = rIndex[ i ]; break; } } }
+			{ if( runCount < 5 * ( i + 1 ) ) { numTexture = rIndex[ i ]; break; } } }
 	}
 	else {
 		if( direction ) {
 			for( int i = 0; i < numStand; i++ )
-			{ if( countIndex < standBuf * ( i + 1 ) ) { numTexture = sIndex[ numStand + i ]; break; } } }
+			{ if( standCount < 5 * ( i + 1 ) ) { numTexture = sIndex[ numStand + i ]; break; } } }
 		else {
 			for( int i = 0; i < numStand; i++ )
-			{ if( countIndex < standBuf * ( i + 1 ) ) { numTexture = sIndex[ i ]; break; } } }
+			{ if( standCount < 5 * ( i + 1 ) ) { numTexture = sIndex[ i ]; break; } } }
 	}
 
 	updateHitBox( numTexture );

@@ -12,6 +12,7 @@
 #include <SFML/Audio.hpp>
 #include "common.h"
 #include <vector>
+#include <iostream>
 #include <fstream>
 
 const unsigned int frameLimit{ 50 };
@@ -19,10 +20,11 @@ extern const float blockX, blockY;
 std::vector<sf::Vector2f> boundaries;
 
 void loadBoundaries( sf::RenderWindow &window, sf::Texture bg, std::string fileName, std::vector<sf::Vector2f> &boundaries );
+void resizeWindow( sf::RenderWindow &window, sf::View &view, sf::Sprite &playerSprite, sf::Vector2f oldWindow, float bgX = 360, float bgY = 180 );
 
 int main() // -------------------------- MAIN START -----------------------------
 {
-	float startingPosX = 15.f, startingPosY = 100.f;
+	float startingPosX = 40.f, startingPosY = 100.f;
 	float windowWidth = 350, windowHeight = 175;
 	int count = 0, option = 3, level;
 	bool flag = 1, quitFlag = 0;
@@ -31,9 +33,10 @@ int main() // -------------------------- MAIN START ----------------------------
 
 	sf::VideoMode desktopMode; desktopMode.getDesktopMode();
 	sf::RenderWindow window( sf::VideoMode( windowWidth, windowHeight, desktopMode.bitsPerPixel ), "MallRats 0.0.1 (testing)" );
-	window.setFramerateLimit( frameLimit );
+	window.setFramerateLimit( frameLimit ); window.setMouseCursorVisible( false );
 	sf::View view = window.getView();
-	
+	sf::Vector2f oldWindow; oldWindow.x = windowWidth; oldWindow.y = windowHeight;
+
 	std::vector<sf::Texture> pointerTextures;
 	loadTextures( pointerTextures, "pointerTextures.txt" );
 
@@ -48,6 +51,7 @@ int main() // -------------------------- MAIN START ----------------------------
 	float posY = startingPosY + ( window.getSize().y / 2.f ) - ( bgTemp.getSize().y / 2.f );
 	Player player( posX, posY );
 
+	resizeWindow( window, view, player.sprite, oldWindow );
 
 // Large loop (contains main menu, level select, and game loop (game loop has pause menu with options)
 	while( flag )
@@ -80,16 +84,17 @@ int main() // -------------------------- MAIN START ----------------------------
 
 		while( window.isOpen() )
 		{
+			oldWindow.x = window.getSize().x; oldWindow.y = window.getSize().y;
 			sf::Event event;
 			while( window.pollEvent(event) )
 			{
 				if( event.type == sf::Event::Closed ) {
 					window.close(); }
 				if( event.type == sf::Event::Resized || sf::Keyboard::isKeyPressed( sf::Keyboard::Escape ) ) {
-					view = window.getView();
-					view.setSize( bgTemp.getSize().x, bgTemp.getSize().y );
-					view.setCenter( window.getSize().x / 2.f, window.getSize().y / 2.f );
-					window.setView( view ); option = 0;
+					resizeWindow( window, view, player.sprite, oldWindow );
+					background.setPosition( window.getSize().x / 2.f, window.getSize().y / 2.f );
+					foreground.setPosition( background.getPosition() );
+					loadBoundaries( window, bgTemp, inFileBounds, boundaries );
 				}
 				if( event.type == sf::Event::KeyPressed ) {
 					if( event.key.code == sf::Keyboard::BackSpace ) {
@@ -119,6 +124,26 @@ int main() // -------------------------- MAIN START ----------------------------
 
 	return 0;
 } // ----------------------------- END MAIN --------------------------------
+
+void resizeWindow( sf::RenderWindow &window, sf::View &view, sf::Sprite &playerSprite, sf::Vector2f oldWindow, float bgX, float bgY )
+{
+	float oldX = oldWindow.x / 2.f, oldY = oldWindow.y / 2.f;
+	float newX = bgX;
+	float newY = bgY;
+	sf::Vector2f playerRel;
+	playerRel.x = playerSprite.getPosition().x - oldX;
+	playerRel.y = playerSprite.getPosition().y - oldY;
+	float scale = (float)window.getSize().x / (float)window.getSize().y;
+	newX = newY * scale;
+	if( newX < bgX ) { newX = bgX; newY = newX / scale; }
+	if( newY < bgY ) { newY = bgY; newX = newY * scale; }
+	view.setSize( newX, newY );
+	view.setCenter( window.getSize().x / 2.f, window.getSize().y / 2.f );
+	window.setView( view );
+	playerRel.x = playerRel.x + ( window.getSize().x / 2.f );
+	playerRel.y = playerRel.y + ( window.getSize().y / 2.f );
+	playerSprite.setPosition( playerRel );
+}
 
 void loadTextures( std::vector<sf::Texture> &textures, std::string fileName )
 {

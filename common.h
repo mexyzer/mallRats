@@ -3,7 +3,7 @@
 #include <vector>
 
 const float playerWidth{ 12.f }, playerHeight{ 18.f },
-			playerSpeed{ 2.1 }, gravity{ 12.f }, jumpSpeed{ 5.f };
+			playerSpeed{ 1.f }, gravity{ 12.f }, jumpSpeed{ 3.f };
 
 extern std::vector<sf::Vector2f> boundaries;
 
@@ -25,7 +25,7 @@ class Player {
 		sf::Vector2f block;
 
 		bool isMoving, direction, isJumping, justJumped;
-		int numTexture, countIndex;
+		int numTexture, standCount, runCount, jumpCount;
 
 		Player( float x, float y );
 		void update( sf::RenderWindow &window );
