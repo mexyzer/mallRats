@@ -6,7 +6,6 @@
 
 extern const float playerWidth, playerHeight, playerSpeed;
 extern const float gravity, jumpSpeed;
-extern const float windowWidth, windowHeight;
 
 const int maxBuf{ 100 }, numStandTextures{ 12 }, numRunTextures{ 4 },
 		  numJumpTextures{ 1 };
@@ -25,8 +24,11 @@ Player::Player( float x, float y )
 	block.x = 20 + hitBox.x; block.y = 20 + hitBox.y;
 }
 
-void Player::update()
+void Player::update( sf::RenderWindow &window )
 {
+	float windowWidth = window.getSize().x;
+	float windowHeight = window.getSize().y;
+
 	if( !isJumping ) { clock.restart(); }
 	sprite.move( movement );
 

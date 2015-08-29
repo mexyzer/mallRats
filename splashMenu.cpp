@@ -22,7 +22,9 @@ int splashMenu( sf::RenderWindow &window, std::string menuTextureFile, std::vect
 	int pointerCount = 0;
 
 // Siginificant y positions
-	float start = optionStart, end, pos[ numOptions ];
+	optionX += ( window.getSize().x / 2.f ) - ( menuTexture.getSize().x / 2.f );
+	float start = optionStart + ( window.getSize().y / 2.f ) - ( menuTexture.getSize().y / 2.f );
+	float end, pos[ numOptions ];
 
 	for( int i = 0; i < numOptions; i++ )
 	{

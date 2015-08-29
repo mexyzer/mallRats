@@ -5,8 +5,6 @@
 const float playerWidth{ 12.f }, playerHeight{ 18.f },
 			playerSpeed{ 2.1 }, gravity{ 12.f }, jumpSpeed{ 5.f };
 
-const float windowWidth{ 350.f }, windowHeight{ 175.f };
-
 extern std::vector<sf::Vector2f> boundaries;
 
 void loadTextures( std::vector<sf::Texture> &textures, std::string fileName );
@@ -30,7 +28,7 @@ class Player {
 		int numTexture, countIndex;
 
 		Player( float x, float y );
-		void update();
+		void update( sf::RenderWindow &window );
 		void updateTexture( int numStand, int numRun, int numJump );
 		void updateHitBox( int numTexture );
 		float x();

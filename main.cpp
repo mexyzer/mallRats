@@ -15,36 +15,39 @@
 #include <fstream>
 
 const unsigned int frameLimit{ 50 };
-extern const float windowWidth, windowHeight, blockX, blockY;
+extern const float blockX, blockY;
 std::vector<sf::Vector2f> boundaries;
 
-void loadBoundaries( std::string fileName, std::vector<sf::Vector2f> &boundaries );
-int  menuSplash( sf::RenderWindow &window, bool &quitFlag );
-void mainSplash( );
-void levelSelectSplash( std::string &fileName, sf::RenderWindow &window );
-
+void loadBoundaries( sf::RenderWindow &window, sf::Texture bg, std::string fileName, std::vector<sf::Vector2f> &boundaries );
 
 int main() // -------------------------- MAIN START -----------------------------
 {
 	float startingPosX = 15.f, startingPosY = 100.f;
+	float windowWidth = 350, windowHeight = 175;
 	int count = 0, option = 3, level;
 	bool flag = 1, quitFlag = 0;
 
-	std::string inFileBounds, obs;
+	std::string inFileBounds;
 
 	sf::VideoMode desktopMode; desktopMode.getDesktopMode();
 	sf::RenderWindow window( sf::VideoMode( windowWidth, windowHeight, desktopMode.bitsPerPixel ), "MallRats 0.0.1 (testing)" );
 	window.setFramerateLimit( frameLimit );
+	sf::View view = window.getView();
 	
-	Player player( startingPosX, startingPosY );
-	std::vector<sf::RectangleShape> obstacles;
 	std::vector<sf::Texture> pointerTextures;
 	loadTextures( pointerTextures, "pointerTextures.txt" );
 
-	
 	sf::Sprite background, foreground; std::vector<sf::Texture> bgTextures, fgTextures;
 	loadTextures( bgTextures, "bgTextures.txt" ); loadTextures( fgTextures, "fgTextures.txt" );
-	sf::Texture bgTemp, fgTemp;
+	sf::Texture bgTemp = bgTextures[0], fgTemp = fgTextures[0];
+
+	view.setCenter( window.getSize().x / 2.f, window.getSize().y / 2.f );
+	view.setSize( bgTemp.getSize().x, bgTemp.getSize().y ); window.setView( view );
+
+	float posX = startingPosX + ( window.getSize().x / 2.f ) - ( bgTemp.getSize().x / 2.f );
+	float posY = startingPosY + ( window.getSize().y / 2.f ) - ( bgTemp.getSize().y / 2.f );
+	Player player( posX, posY );
+
 
 // Large loop (contains main menu, level select, and game loop (game loop has pause menu with options)
 	while( flag )
@@ -57,10 +60,13 @@ int main() // -------------------------- MAIN START ----------------------------
 
 	// Level Select
 		if( option == 0 ) {
-			level = splashMenu( window, "resources/levelSelect.png", pointerTextures, 2, 380, 260, 50 );
+			level = splashMenu( window, "resources/levelSelect.png", pointerTextures, 2, 80, 110, 50 );
 			if( level == 0 ) { inFileBounds = "bg1bounds.txt"; }
 			else { inFileBounds = "bg2bounds.txt"; }
-			option = 2; player.sprite.setPosition( startingPosX, startingPosY );
+			option = 2;
+			posX = startingPosX + ( window.getSize().x / 2.f ) - ( bgTemp.getSize().x / 2.f );
+			posY = startingPosY + ( window.getSize().y / 2.f ) - ( bgTemp.getSize().y / 2.f );
+			player.sprite.setPosition( posX, posY );
 		}
 
 		bgTemp = bgTextures[ level ]; fgTemp = fgTextures[ level ];
@@ -68,9 +74,9 @@ int main() // -------------------------- MAIN START ----------------------------
 		background.setTexture( bgTemp ); foreground.setTexture( fgTemp );
 		background.setOrigin( bgTemp.getSize().x / 2.f, bgTemp.getSize().y / 2.f );
 		foreground.setOrigin( background.getOrigin() );
-		background.setPosition( windowWidth / 2.f, windowHeight / 2.f ); foreground.setPosition( background.getPosition() );
+		background.setPosition( window.getSize().x / 2.f, window.getSize().y / 2.f ); foreground.setPosition( background.getPosition() );
 
-		loadBoundaries( inFileBounds, boundaries );
+		loadBoundaries( window, bgTemp, inFileBounds, boundaries );
 
 		while( window.isOpen() )
 		{
@@ -79,15 +85,21 @@ int main() // -------------------------- MAIN START ----------------------------
 			{
 				if( event.type == sf::Event::Closed ) {
 					window.close(); }
+				if( event.type == sf::Event::Resized || sf::Keyboard::isKeyPressed( sf::Keyboard::Escape ) ) {
+					view = window.getView();
+					view.setSize( bgTemp.getSize().x, bgTemp.getSize().y );
+					view.setCenter( window.getSize().x / 2.f, window.getSize().y / 2.f );
+					window.setView( view ); option = 0;
+				}
 				if( event.type == sf::Event::KeyPressed ) {
 					if( event.key.code == sf::Keyboard::BackSpace ) {
-						option = splashMenu( window, "resources/pause.png", pointerTextures, 2, 380, 260, 50 ); }
+						option = splashMenu( window, "resources/pause.png", pointerTextures, 2, 80, 110, 50 ); }
 					else { }
 				}
 			}
 			count++; // Simple count used for anything
 
-			player.update(); // All player motion and collision handling
+			player.update( window ); // All player motion and collision handling
 	
 		// Mind the order of drawing layers
 			window.clear(); // CLEAR
@@ -159,10 +171,12 @@ bool testCollide( sf::Vector2f block, float x, float y, sf::Vector2f &movement, 
 	return true;
 }
 
-void loadBoundaries( std::string fileName, std::vector<sf::Vector2f> &boundaries )
+void loadBoundaries( sf::RenderWindow &window, sf::Texture bg, std::string fileName, std::vector<sf::Vector2f> &boundaries )
 {
 	boundaries.clear();
 	float x, y;
+	float bufX = ( window.getSize().x / 2.f ) - ( bg.getSize().x / 2.f );
+	float bufY = ( window.getSize().y / 2.f ) - ( bg.getSize().y / 2.f );
 	sf::Vector2f temp;
 	std::string line;
 	std::ifstream inFile( fileName );
@@ -174,7 +188,7 @@ void loadBoundaries( std::string fileName, std::vector<sf::Vector2f> &boundaries
 		x = std::stof( line.substr( 0, 4 ) );
 		y = std::stof( line.substr( 5, 4 ) );
 
-		temp.x = x; temp.y = y;
+		temp.x = x + bufX; temp.y = y + bufY;
 
 		boundaries.push_back( temp );
 	}
