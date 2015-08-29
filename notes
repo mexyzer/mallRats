@@ -1,8 +1,6 @@
-- IMPORTANT: figure out scaling (the textures are too small to really see)
-		- in the same vein we should figure out scaling for fullscreen (while matching native resolution)
-
 - with the change of hitbox/sprite size, once it changes back the player might be within a boundary
 		- Player::updateHitBox() in player.cpp
+		- Also now having issues with walking right into a boundary box on the edges of the test bg
 
 - fix menu responsiveness
 		- splashMenu.cpp
