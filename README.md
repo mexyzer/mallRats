@@ -5,3 +5,7 @@ Welcome to the project that began a long time ago in the mind of my father. This
 # Code/Design
 
 The code is written in C++ using SFML to render "graphics". That term is used loosely as this iteration of the project uses .png files as textures that are simply rendered in succession to simulate animation.
+
+# To Help
+
+Read the notes file to see what aspects of the code need work.
