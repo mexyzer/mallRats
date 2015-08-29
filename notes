@@ -1,0 +1,14 @@
+- IMPORTANT: figure out scaling (the textures are too small to really see)
+		- in the same vein we should figure out scaling for fullscreen (while matching native resolution)
+
+- with the change of hitbox/sprite size, once it changes back the player might be within a boundary
+		- Player::updateHitBox() in player.cpp
+
+- fix menu responsiveness
+		- splashMenu.cpp
+		- also the menu .png's are too big to see the pointer so we need pointer animation and new menus
+
+- there is no map 2 so for now, if it is selected, the core is dumped
+
+
+

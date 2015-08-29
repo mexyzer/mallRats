@@ -1,0 +1,1 @@
+resources/fg1.png
