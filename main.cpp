@@ -51,7 +51,10 @@ int main() // -------------------------- MAIN START ----------------------------
 	float posY = startingPosY + ( window.getSize().y / 2.f ) - ( bgTemp.getSize().y / 2.f );
 	Player player( posX, posY );
 
-	resizeWindow( window, view, player.sprite, oldWindow );
+	// Rectangle to draw boundaries for testing
+		sf::RectangleShape boundShape; boundShape.setSize( {40.f, 40.f} );
+		boundShape.setOrigin( 20.f, 20.f ); boundShape.setFillColor( sf::Color::Green );
+	//resizeWindow( window, view, player.sprite, oldWindow );
 
 // Large loop (contains main menu, level select, and game loop (game loop has pause menu with options)
 	while( flag )
@@ -72,7 +75,7 @@ int main() // -------------------------- MAIN START ----------------------------
 			posY = startingPosY + ( window.getSize().y / 2.f ) - ( bgTemp.getSize().y / 2.f );
 			player.sprite.setPosition( posX, posY );
 		}
-
+		resizeWindow( window, view, player.sprite, oldWindow );
 		bgTemp = bgTextures[ level ]; fgTemp = fgTextures[ level ];
 
 		background.setTexture( bgTemp ); foreground.setTexture( fgTemp );
@@ -104,13 +107,14 @@ int main() // -------------------------- MAIN START ----------------------------
 			}
 			count++; // Simple count used for anything
 
-			player.update( window ); // All player motion and collision handling
+			player.update(); // All player motion and collision handling
 	
 		// Mind the order of drawing layers
 			window.clear(); // CLEAR
 			window.draw( background );
 			window.draw( player.sprite );
 			window.draw( foreground );
+			for( int i = 0; (unsigned int)i < boundaries.size(); i++ ) { boundShape.setPosition( boundaries[i] ); window.draw( boundShape ); }
 			window.display(); // DISPLAY
 
 		// Option handling (selected from pause menu)

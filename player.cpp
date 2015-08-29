@@ -24,11 +24,8 @@ Player::Player( float x, float y )
 	block.x = 20 + hitBox.x; block.y = 20 + hitBox.y;
 }
 
-void Player::update( sf::RenderWindow &window )
+void Player::update()
 {
-	float windowWidth = window.getSize().x;
-	float windowHeight = window.getSize().y;
-
 	if( !isJumping ) { clock.restart(); }
 	sprite.move( movement );
 
@@ -36,13 +33,11 @@ void Player::update( sf::RenderWindow &window )
 	 && sf::Keyboard::isKeyPressed( sf::Keyboard::Right ) ) {
 		movement.x = 0;
 		isMoving = false; }
-	else if( sf::Keyboard::isKeyPressed( sf::Keyboard::Right )
-	 && right() < windowWidth ) {
+	else if( sf::Keyboard::isKeyPressed( sf::Keyboard::Right ) ) {
 		movement.x = playerSpeed;
 		isMoving = true;
 		direction = true; }
-	else if( sf::Keyboard::isKeyPressed( sf::Keyboard::Left )
-	 && left() > 0 ) {
+	else if( sf::Keyboard::isKeyPressed( sf::Keyboard::Left ) ) {
 		movement.x = -playerSpeed;
 		isMoving = true;
 		direction = false; }
@@ -68,9 +63,9 @@ void Player::update( sf::RenderWindow &window )
 			clock.restart(); }
 	}
 	else {
-		if( bottom() < windowHeight - 1 ) {
-			movement.y = movement.y + ( gravity * clock.getElapsedTime().asSeconds() );
-			clock.restart();
+		if( bottom() < 2000 ) {															// ARBITRARY VALUE TO TEST FOR LOWER BOUNDARY
+			movement.y = movement.y + ( gravity * clock.getElapsedTime().asSeconds() );	// (should change so that there is no need to 
+			clock.restart();															// test for this value)
 			isJumping = true; }
 		else {
 			movement.y = 0;
@@ -85,8 +80,8 @@ void Player::update( sf::RenderWindow &window )
 // Test for boundary
 	if( !testCollide( block, x(), y(), movement, boundaries ) ) { isJumping = false; }
 
-	if( bottom() + movement.y >= windowHeight ) {
-		movement.y = windowHeight - bottom() - 1; }
+	if( bottom() + movement.y >= 2000 ) {
+		movement.y = 2000 - bottom() - 1; }
 
 }
 
