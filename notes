@@ -1,16 +1,20 @@
 Tim:
-- with the change of hitbox/sprite size, once it changes back the player might be within a boundary
+- With the change of hitbox/sprite size, once it changes back the player might be within a 
+  boundary
 		- Player::updateHitBox() in player.cpp
-			- This is not an issue for now as the hitbox size doesn't change b/c the textures are all the same size
+			- This is not an issue for now as the hitbox size doesn't change b/c the textures 
+			  are all the same size
 
-- fix menu responsiveness
+- Fix menu responsiveness
 		- splashMenu.cpp
+		- as of now the menu has a delay for input so that it doesn't spaz out
 		- also the menu .png's are too big to see the pointer so we need pointer animation and new menus
 
-- there is no map 2 so for now, if it is selected, the core is dumped
+- There is no map 2 so for now, if it is selected, the core is dumped
 
 
-- I just added a simple active/dead zone scrolling feature in the main loop
-		- This must be altered for more general accuracy as it is still just a test
+- I have added a simple active/dead zone scrolling feature using a function
+		- This function is in main.cpp -> deadZoneView() it basically moves the camera (or not
+		  if it is in the 'dead zone'
 	
 
