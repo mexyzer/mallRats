@@ -1,6 +1,7 @@
+Tim:
 - with the change of hitbox/sprite size, once it changes back the player might be within a boundary
 		- Player::updateHitBox() in player.cpp
-		- Also now having issues with walking right into a boundary box on the edges of the test bg
+			- This is not an issue for now as the hitbox size doesn't change b/c the textures are all the same size
 
 - fix menu responsiveness
 		- splashMenu.cpp
@@ -9,4 +10,7 @@
 - there is no map 2 so for now, if it is selected, the core is dumped
 
 
+- I just added a simple active/dead zone scrolling feature in the main loop
+		- This must be altered for more general accuracy as it is still just a test
+	
 

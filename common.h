@@ -24,7 +24,7 @@ class Player {
 		sf::Vector2f hitBox;
 		sf::Vector2f block;
 
-		bool isMoving, direction, isJumping, justJumped;
+		bool isMoving, direction, isCollide, isJumping, justJumped;
 		int numTexture, standCount, runCount, jumpCount;
 
 		Player( float x, float y );

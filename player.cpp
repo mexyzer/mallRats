@@ -20,7 +20,7 @@ Player::Player( float x, float y )
 	sprite.setTexture( textures[0] ); numTexture = 0;
 	movement.x = 0; movement.y = 0;
 	standCount = 0, runCount = 0, jumpCount = 0;
-	hitBox.x = 20; hitBox.y = 30;
+	hitBox.x = 6; hitBox.y = 9;
 	block.x = 20 + hitBox.x; block.y = 20 + hitBox.y;
 }
 
@@ -78,7 +78,8 @@ void Player::update()
 	if( movement.y > gravity * 2 ) { movement.y = gravity * 2; }
 
 // Test for boundary
-	if( !testCollide( block, x(), y(), movement, boundaries ) ) { isJumping = false; }
+	isCollide =  testCollide( block, x(), y(), movement, boundaries ); 
+	if( !isCollide ) { isJumping = false; }
 
 	if( bottom() + movement.y >= 2000 ) {
 		movement.y = 2000 - bottom() - 1; }

@@ -24,8 +24,9 @@ void resizeWindow( sf::RenderWindow &window, sf::View &view, sf::Sprite &playerS
 
 int main() // -------------------------- MAIN START -----------------------------
 {
-	float startingPosX = 40.f, startingPosY = 100.f;
+	float startingPosX = 175.f, startingPosY = 100.f;
 	float windowWidth = 350, windowHeight = 175;
+	float deadZoneLowerBound = 100, deadZoneUpperBound = 250, deadLow, deadHigh;
 	int count = 0, option = 3, level;
 	bool flag = 1, quitFlag = 0;
 
@@ -51,10 +52,13 @@ int main() // -------------------------- MAIN START ----------------------------
 	float posY = startingPosY + ( window.getSize().y / 2.f ) - ( bgTemp.getSize().y / 2.f );
 	Player player( posX, posY );
 
+	deadLow = deadZoneLowerBound + ( window.getSize().x / 2.f ) - ( bgTemp.getSize().x / 2.f );
+	deadHigh = deadZoneUpperBound + ( window.getSize().x / 2.f ) - ( bgTemp.getSize().x / 2.f );
+
 	// Rectangle to draw boundaries for testing
-		sf::RectangleShape boundShape; boundShape.setSize( {40.f, 40.f} );
-		boundShape.setOrigin( 20.f, 20.f ); boundShape.setFillColor( sf::Color::Green );
-	//resizeWindow( window, view, player.sprite, oldWindow );
+	//	sf::RectangleShape boundShape; boundShape.setSize( {38.f, 38.f} );
+	//	boundShape.setOrigin( 19.f, 19.f ); boundShape.setFillColor( sf::Color::Green );
+	//	boundShape.setOutlineColor( sf::Color::White ); boundShape.setOutlineThickness( 1.f );
 
 // Large loop (contains main menu, level select, and game loop (game loop has pause menu with options)
 	while( flag )
@@ -75,7 +79,7 @@ int main() // -------------------------- MAIN START ----------------------------
 			posY = startingPosY + ( window.getSize().y / 2.f ) - ( bgTemp.getSize().y / 2.f );
 			player.sprite.setPosition( posX, posY );
 		}
-		resizeWindow( window, view, player.sprite, oldWindow );
+
 		bgTemp = bgTextures[ level ]; fgTemp = fgTextures[ level ];
 
 		background.setTexture( bgTemp ); foreground.setTexture( fgTemp );
@@ -84,6 +88,7 @@ int main() // -------------------------- MAIN START ----------------------------
 		background.setPosition( window.getSize().x / 2.f, window.getSize().y / 2.f ); foreground.setPosition( background.getPosition() );
 
 		loadBoundaries( window, bgTemp, inFileBounds, boundaries );
+		//resizeWindow( window, view, player.sprite, oldWindow );
 
 		while( window.isOpen() )
 		{
@@ -97,6 +102,8 @@ int main() // -------------------------- MAIN START ----------------------------
 					resizeWindow( window, view, player.sprite, oldWindow );
 					background.setPosition( window.getSize().x / 2.f, window.getSize().y / 2.f );
 					foreground.setPosition( background.getPosition() );
+					deadLow = deadZoneLowerBound + ( window.getSize().x / 2.f ) - ( bgTemp.getSize().x / 2.f );
+					deadHigh = deadLow - deadZoneLowerBound + deadZoneUpperBound;
 					loadBoundaries( window, bgTemp, inFileBounds, boundaries );
 				}
 				if( event.type == sf::Event::KeyPressed ) {
@@ -108,13 +115,17 @@ int main() // -------------------------- MAIN START ----------------------------
 			count++; // Simple count used for anything
 
 			player.update(); // All player motion and collision handling
-	
+
+		// Experimental active/dead zone scrolling
+			if( player.x() > deadLow && player.x() < deadHigh ) {
+				view.setCenter( player.x(), view.getCenter().y ); window.setView( view ); }
+
 		// Mind the order of drawing layers
 			window.clear(); // CLEAR
 			window.draw( background );
 			window.draw( player.sprite );
 			window.draw( foreground );
-			for( int i = 0; (unsigned int)i < boundaries.size(); i++ ) { boundShape.setPosition( boundaries[i] ); window.draw( boundShape ); }
+			//for( int i = 0; (unsigned int)i < boundaries.size(); i++ ) { boundShape.setPosition( boundaries[i] ); window.draw( boundShape ); }
 			window.display(); // DISPLAY
 
 		// Option handling (selected from pause menu)
@@ -165,6 +176,7 @@ void loadTextures( std::vector<sf::Texture> &textures, std::string fileName )
 
 bool testCollide( sf::Vector2f block, float x, float y, sf::Vector2f &movement, std::vector<sf::Vector2f> boundaries )
 {
+	bool fallStop = true;
 	float xLeft, xRight, yUp, yDown, yNext, xNext;
 	float blockX = block.x, blockY = block.y;
 	sf::Vector2f current;
@@ -176,7 +188,7 @@ bool testCollide( sf::Vector2f block, float x, float y, sf::Vector2f &movement, 
 		xNext = x + movement.x; yNext = y + movement.y;
 
 		if( ( y < yDown ) && ( y > yUp ) ) {
-			if( ( xNext >= xLeft ) && ( xNext <= xRight )  ) {
+			if( ( xNext > xLeft ) && ( xNext < xRight )  ) {
 				if( movement.x > 0 ) {
 					movement.x = xLeft - x; }
 				else if(  movement.x < 0 ) {
@@ -188,16 +200,17 @@ bool testCollide( sf::Vector2f block, float x, float y, sf::Vector2f &movement, 
 			if( ( yNext > yUp ) && ( yNext < yDown ) ) {
 				if( movement.y > 0 ) {
 					movement.y = yUp - y;
-					return false; }
+					fallStop = false; }
 			}
 			if( ( yNext > yUp ) && ( yNext < yDown ) ) {
 				if( movement.y < 0 ) {
 					movement.y =  yDown - y; }
 			}
 		}
+	
 	}
 
-	return true;
+	return fallStop;
 }
 
 void loadBoundaries( sf::RenderWindow &window, sf::Texture bg, std::string fileName, std::vector<sf::Vector2f> &boundaries )
