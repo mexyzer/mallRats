@@ -20,42 +20,44 @@ extern const float blockX, blockY;
 std::vector<sf::Vector2f> boundaries;
 
 void loadBoundaries( sf::RenderWindow &window, sf::Texture bg, std::string fileName, std::vector<sf::Vector2f> &boundaries );
-void resizeWindow( sf::RenderWindow &window, sf::View &view, sf::Sprite &playerSprite, sf::Vector2f oldWindow, float bgX = 360, float bgY = 180 );
+void resizeWindow( sf::RenderWindow &window, sf::View &view, sf::Sprite &playerSprite, sf::Vector2f oldWindow, float bgX = 350, float bgY = 175 );
 void deadZoneView( sf::RenderWindow &window, sf::View &view, Player &player, sf::Texture bg );
 
 int main() // -------------------------- MAIN START -----------------------------
 {
+std::cout << "start program ";
 	float startingPosX = 175.f, startingPosY = 100.f;
 	float windowWidth = 350, windowHeight = 175;
-//	float deadZoneLowerBound = 100, deadZoneUpperBound = 250, deadLow, deadHigh;
-	int count = 0, option = 3, level;
+	int count = 0, option = 3, num;
 	bool flag = 1, quitFlag = 0;
 
 	std::string inFileBounds;
 
 	sf::VideoMode desktopMode; desktopMode.getDesktopMode();
 	sf::RenderWindow window( sf::VideoMode( windowWidth, windowHeight, desktopMode.bitsPerPixel ), "MallRats 0.0.1 (testing)" );
-	window.setFramerateLimit( frameLimit ); window.setMouseCursorVisible( false );
+	window.setFramerateLimit( frameLimit ); window.setMouseCursorVisible( false ); window.setVerticalSyncEnabled( true );
 	sf::View view = window.getView();
 	sf::Vector2f oldWindow; oldWindow.x = windowWidth; oldWindow.y = windowHeight;
 
 	std::vector<sf::Texture> pointerTextures;
 	loadTextures( pointerTextures, "pointerTextures.txt" );
-
-	sf::Sprite background, foreground; std::vector<sf::Texture> bgTextures, fgTextures;
-	loadTextures( bgTextures, "bgTextures.txt" ); loadTextures( fgTextures, "fgTextures.txt" );
-	sf::Texture bgTemp = bgTextures[0], fgTemp = fgTextures[0];
+std::cout << "before level ";
+	Level level;
+	level.update( window );
+std::cout << "after level ";
+//	sf::Sprite background, foreground; std::vector<sf::Texture> bgTextures, fgTextures;
+//	loadTextures( bgTextures, "bgTextures.txt" ); loadTextures( fgTextures, "fgTextures.txt" );
+//	sf::Texture bgTemp = bgTextures[0], fgTemp = fgTextures[0];
 
 	view.setCenter( window.getSize().x / 2.f, window.getSize().y / 2.f );
-	view.setSize( bgTemp.getSize().x, bgTemp.getSize().y ); window.setView( view );
+//	view.setSize( bgTemp.getSize().x, bgTemp.getSize().y ); window.setView( view );
+	view.setSize( 350, 175 ); window.setView( view );
+	
+	level.update( window );
 
-	float posX = startingPosX + ( window.getSize().x / 2.f ) - ( bgTemp.getSize().x / 2.f );
-	float posY = startingPosY + ( window.getSize().y / 2.f ) - ( bgTemp.getSize().y / 2.f );
+	float posX = startingPosX + ( window.getSize().x / 2.f ) - ( level.temp.getSize().x / 2.f );
+	float posY = startingPosY + ( window.getSize().y / 2.f ) - ( level.temp.getSize().y / 2.f );
 	Player player( posX, posY );
-
-	deadZoneView( window, view, player, bgTemp );
-//	deadLow = deadZoneLowerBound + ( window.getSize().x / 2.f ) - ( bgTemp.getSize().x / 2.f );
-//	deadHigh = deadZoneUpperBound + ( window.getSize().x / 2.f ) - ( bgTemp.getSize().x / 2.f );
 
 	// Rectangle to draw boundaries for testing (if used, also uncomment the for-loop in draw sequence)
 	//	sf::RectangleShape boundShape; boundShape.setSize( {38.f, 38.f} );
@@ -73,21 +75,22 @@ int main() // -------------------------- MAIN START ----------------------------
 
 	// Level Select
 		if( option == 0 ) {
-			level = splashMenu( window, "resources/levelSelect.png", pointerTextures, 2, 80, 110, 50 );
-			if( level == 0 ) { inFileBounds = "bg1bounds.txt"; }
-			else { inFileBounds = "bg2bounds.txt"; }
-			option = 2;
-			bgTemp = bgTextures[ level ]; fgTemp = fgTextures[ level ];
-			background.setTexture( bgTemp ); foreground.setTexture( fgTemp );
-			background.setOrigin( bgTemp.getSize().x / 2.f, bgTemp.getSize().y / 2.f );
-			foreground.setOrigin( background.getOrigin() );
-			background.setPosition( window.getSize().x / 2.f, window.getSize().y / 2.f ); foreground.setPosition( background.getPosition() );
-			posX = startingPosX + ( window.getSize().x / 2.f ) - ( bgTemp.getSize().x / 2.f );
-			posY = startingPosY + ( window.getSize().y / 2.f ) - ( bgTemp.getSize().y / 2.f );
+			num = splashMenu( window, "resources/levelSelect.png", pointerTextures, 2, 80, 110, 50 );
+			if( num == 0 ) { /*inFileBounds = "bg1bounds.txt";*/ level.numLevel = num; }
+			else { /*inFileBounds = "bg2bounds.txt";*/ }
+			option = 2; level.update( window );
+			//bgTemp = bgTextures[ level ]; fgTemp = fgTextures[ level ];
+			//background.setTexture( bgTemp ); foreground.setTexture( fgTemp );
+			//background.setOrigin( bgTemp.getSize().x / 2.f, bgTemp.getSize().y / 2.f );
+			//foreground.setOrigin( background.getOrigin() );
+			//background.setPosition( window.getSize().x / 2.f, window.getSize().y / 2.f ); foreground.setPosition( background.getPosition() );
+			posX = startingPosX + ( window.getSize().x / 2.f ) - ( level.temp.getSize().x / 2.f );
+			posY = startingPosY + ( window.getSize().y / 2.f ) - ( level.temp.getSize().y / 2.f );
 			player.sprite.setPosition( posX, posY );
+			deadZoneView( window, view, player, level.temp );
 		}
 
-		loadBoundaries( window, bgTemp, inFileBounds, boundaries );
+		loadBoundaries( window, level.temp, level.boundsFile, boundaries );
 
 		while( window.isOpen() )
 		{
@@ -99,12 +102,11 @@ int main() // -------------------------- MAIN START ----------------------------
 					window.close(); }
 				if( event.type == sf::Event::Resized || sf::Keyboard::isKeyPressed( sf::Keyboard::Escape ) ) {
 					resizeWindow( window, view, player.sprite, oldWindow );
-					background.setPosition( window.getSize().x / 2.f, window.getSize().y / 2.f );
-					foreground.setPosition( background.getPosition() );
-					//deadLow = deadZoneLowerBound + ( window.getSize().x / 2.f ) - ( bgTemp.getSize().x / 2.f );
-					//deadHigh = deadLow - deadZoneLowerBound + deadZoneUpperBound;
-					loadBoundaries( window, bgTemp, inFileBounds, boundaries );
-					deadZoneView( window, view, player, bgTemp );
+					level.update( window );
+					//background.setPosition( window.getSize().x / 2.f, window.getSize().y / 2.f );
+					//foreground.setPosition( background.getPosition() );
+					loadBoundaries( window, level.temp, level.boundsFile, boundaries );
+					deadZoneView( window, view, player, level.temp );
 				}
 				if( event.type == sf::Event::KeyPressed ) {
 					if( event.key.code == sf::Keyboard::BackSpace ) {
@@ -116,26 +118,27 @@ int main() // -------------------------- MAIN START ----------------------------
 
 			player.update(); // All player motion and collision handling
 
-		// Experimental active/dead zone scrolling
-//			if( player.x() > deadLow && player.x() < deadHigh ) {
-//				view.setCenter( player.x(), view.getCenter().y ); window.setView( view ); }
-			deadZoneView( window, view, player, bgTemp );
+		// Active/dead zone scrolling
+			deadZoneView( window, view, player, level.temp );
+
 		// Mind the order of drawing layers
 			window.clear(); // CLEAR
-			window.draw( background );
+			window.draw( level.background );
+		//	window.draw( background );
 			window.draw( player.sprite );
-			window.draw( foreground );
+			window.draw( level.foreground );
+		//	window.draw( foreground );
 			//for( int i = 0; (unsigned int)i < boundaries.size(); i++ ) { boundShape.setPosition( boundaries[i] ); window.draw( boundShape ); }
 			window.display(); // DISPLAY
 
 		// Option handling (selected from pause menu)
 			if( option == 1 ) { quitFlag = 1; break; } // option 1 corresponds to quit game
 			else if( option == 0 ) { break; } // option 0 corresponds to level select (will be changed later)
-		} // while
+		} // while: gameplay
 
-		if( quitFlag ) { flag = 0; }
-
-	} // while
+		if( quitFlag ) { flag = 0; window.setVerticalSyncEnabled( false ); }
+		window.clear();
+	} // while: main game loop
 
 	return 0;
 } // ----------------------------- END MAIN --------------------------------

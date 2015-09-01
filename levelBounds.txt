@@ -1,0 +1,2 @@
+bg1bounds.txt
+bg2bounds.txt

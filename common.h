@@ -1,9 +1,10 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <vector>
+#include <string>
 
 const float playerWidth{ 12.f }, playerHeight{ 18.f },
-			playerSpeed{ 1.2 }, gravity{ 12.f }, jumpSpeed{ 4.f };
+			playerSpeed{ 1.f }, gravity{ 10.f }, jumpSpeed{ 3.f };
 
 extern std::vector<sf::Vector2f> boundaries;
 
@@ -24,9 +25,11 @@ class Player {
 		sf::Vector2f hitBox;
 		sf::Vector2f block;
 
+// Variables
 		bool isMoving, direction, isCollide, isJumping, justJumped;
 		int numTexture, standCount, runCount, jumpCount;
 
+// Member functions
 		Player( float x, float y );
 		void update();
 		void updateTexture( int numStand, int numRun, int numJump );
@@ -38,4 +41,26 @@ class Player {
 		float right();
 		float left();
 
+};
+
+class Level {
+	
+	public:
+		sf::Sprite background, foreground;
+		std::vector<sf::Texture> bgTextures, fgTextures;
+		sf::Texture temp;
+
+// Variables
+		int numLevel, currentLevel, numLighting;
+		std::vector<std::string> boundaryFiles;
+		std::string boundsFile;
+
+// Member functions
+		Level();
+		void update( sf::RenderWindow &window );
+		void loadBoundsFiles( std::string fileName, std::vector<std::string> &boundaryFiles );
+		float top();
+		float bottom();
+		float right();
+		float left();
 };
