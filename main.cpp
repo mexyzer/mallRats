@@ -27,7 +27,6 @@ int main() // -------------------------- MAIN START ----------------------------
 {
 	float startingPosX = 175.f, startingPosY = 100.f;
 	float windowWidth = 350, windowHeight = 175;
-//	float deadZoneLowerBound = 100, deadZoneUpperBound = 250, deadLow, deadHigh;
 	int count = 0, option = 3, level;
 	bool flag = 1, quitFlag = 0;
 
@@ -54,8 +53,6 @@ int main() // -------------------------- MAIN START ----------------------------
 	Player player( posX, posY );
 
 	deadZoneView( window, view, player, bgTemp );
-//	deadLow = deadZoneLowerBound + ( window.getSize().x / 2.f ) - ( bgTemp.getSize().x / 2.f );
-//	deadHigh = deadZoneUpperBound + ( window.getSize().x / 2.f ) - ( bgTemp.getSize().x / 2.f );
 
 	// Rectangle to draw boundaries for testing (if used, also uncomment the for-loop in draw sequence)
 	//	sf::RectangleShape boundShape; boundShape.setSize( {38.f, 38.f} );
@@ -101,8 +98,6 @@ int main() // -------------------------- MAIN START ----------------------------
 					resizeWindow( window, view, player.sprite, oldWindow );
 					background.setPosition( window.getSize().x / 2.f, window.getSize().y / 2.f );
 					foreground.setPosition( background.getPosition() );
-					//deadLow = deadZoneLowerBound + ( window.getSize().x / 2.f ) - ( bgTemp.getSize().x / 2.f );
-					//deadHigh = deadLow - deadZoneLowerBound + deadZoneUpperBound;
 					loadBoundaries( window, bgTemp, inFileBounds, boundaries );
 					deadZoneView( window, view, player, bgTemp );
 				}
@@ -116,10 +111,9 @@ int main() // -------------------------- MAIN START ----------------------------
 
 			player.update(); // All player motion and collision handling
 
-		// Experimental active/dead zone scrolling
-//			if( player.x() > deadLow && player.x() < deadHigh ) {
-//				view.setCenter( player.x(), view.getCenter().y ); window.setView( view ); }
+		// Active/dead zone scrolling
 			deadZoneView( window, view, player, bgTemp );
+
 		// Mind the order of drawing layers
 			window.clear(); // CLEAR
 			window.draw( background );
