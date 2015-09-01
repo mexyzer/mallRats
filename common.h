@@ -58,7 +58,7 @@ class Level {
 // Member functions
 		Level();
 		void update( sf::RenderWindow &window );
-		void loadBoundsFiles( std::string fileName, std::vector<std::string> &boundaryFiles );
+		void loadBoundsFiles( std::string fileName );
 		float top();
 		float bottom();
 		float right();

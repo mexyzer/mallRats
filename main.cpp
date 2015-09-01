@@ -76,8 +76,7 @@ std::cout << "after level ";
 	// Level Select
 		if( option == 0 ) {
 			num = splashMenu( window, "resources/levelSelect.png", pointerTextures, 2, 80, 110, 50 );
-			if( num == 0 ) { /*inFileBounds = "bg1bounds.txt";*/ level.numLevel = num; }
-			else { /*inFileBounds = "bg2bounds.txt";*/ }
+			level.numLevel = num;
 			option = 2; level.update( window );
 			//bgTemp = bgTextures[ level ]; fgTemp = fgTextures[ level ];
 			//background.setTexture( bgTemp ); foreground.setTexture( fgTemp );
@@ -123,10 +122,10 @@ std::cout << "after level ";
 
 		// Mind the order of drawing layers
 			window.clear(); // CLEAR
-			window.draw( level.background );
+		//	window.draw( level.background );
 		//	window.draw( background );
 			window.draw( player.sprite );
-			window.draw( level.foreground );
+		//	window.draw( level.foreground );
 		//	window.draw( foreground );
 			//for( int i = 0; (unsigned int)i < boundaries.size(); i++ ) { boundShape.setPosition( boundaries[i] ); window.draw( boundShape ); }
 			window.display(); // DISPLAY

@@ -11,18 +11,16 @@ Level::Level()
 {
 std::cout << "level init ";
 	loadTextures( bgTextures, "backgroundTextures.txt" );
-//	background.setPosition( (float)window.getSize().x / 2.f, (float)window.getSize().y / 2.f );
 	background.setTexture( bgTextures[0] );
 	temp = bgTextures[0];
 	background.setOrigin( temp.getSize().x / 2.f, temp.getSize().y / 2.f );
 std::cout << "set background ";
 	
 	loadTextures( fgTextures, "foregroundTextures.txt" );
-//	foreground.setPosition( background.getPosition() );
 	foreground.setTexture( fgTextures[0] );
 	foreground.setOrigin( background.getOrigin() );
 
-	loadBoundsFiles( "levelBounds.txt", boundaryFiles );
+	loadBoundsFiles( "levelBounds.txt" );
 
 	boundsFile = boundaryFiles[0];
 std::cout << "initialized level obj ";
@@ -43,7 +41,7 @@ std::cout << "updated level ";
 std::cout << "updated bouds ";
 }
 
-void Level::loadBoundsFiles( std::string fileName, std::vector<std::string> &boundaryFiles )
+void Level::loadBoundsFiles( std::string fileName )
 {
 	std::string name;
 	std::ifstream inFile( fileName );
