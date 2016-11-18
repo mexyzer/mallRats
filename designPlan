@@ -1,0 +1,19 @@
+## The overall design of the game
+
+#Class Hierarchy
+
+Character
+	Player
+	NonPlayer
+	Enemy
+
+Item
+	InventoryItem
+	TriggerItem
+
+Layer
+	Background
+	Foreground
+
+Menu
+	Dialog
