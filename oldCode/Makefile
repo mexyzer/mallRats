@@ -14,4 +14,4 @@ splashMenu.o: splashMenu.cpp
 	$(CC) $(CFLAGS) splashMenu.cpp common.h
 
 clean:
-	rm -rf *o mallRats
+	rm -rf *gch *o mallRats
