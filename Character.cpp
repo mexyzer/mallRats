@@ -3,26 +3,37 @@
 #include <iostream>
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
+
 #include "InventoryItem.h"
 #include "Character.h"
 
 using namespace std;
 
-// Constructors --------------------------------------------------------------------------------------
+// Constructors/Initialization ------------------------------------------------------------------------
 
-Character::Character()			// Default Constructor
+Character::Character()
+// Default Constructor
 {
 	sprite_ = sf::Sprite();
 }
 
-Character::Character( sf::Texture texture, float x, float y, float height, float width )
+Character::Character( string textureFile, float x, float y, float height, float width )
 {
-	sprite_ = sf::Sprite( texture );
+	loadTextures( textureFile );
+	sprite_ = sf::Sprite( standTextures[1] );
 	setPosition( x, y );
 	setHitBox( height, width );
 }
 
-Character::~Character()			// Destructor
+Character::~Character()
+// Destructor
+{
+	
+}
+
+void Character::loadTextures( string inFile )
+// Loads standing/walking/jumping textures to individual vectors for iteration
 {
 	
 }

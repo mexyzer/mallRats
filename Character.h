@@ -11,7 +11,7 @@ class Character
 {
 	public:
 		Character();	// Default Constructor
-		Character( sf::Texture texture,		// Alternate Constructor
+		Character( string textureFile,		// Alternate Constructor
 					float x, float y,
 					float height, float width );
 		~Character();	// Destructor
@@ -43,4 +43,5 @@ class Character
 		void setHitBox( float height, float width );
 		void updateSprite();
 		void updatePosition();
+		void loadTextures( string inFile );
 };
