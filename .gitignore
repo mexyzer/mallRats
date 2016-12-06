@@ -1,3 +1,4 @@
 *.o
 *.gch
-mallRats*
+mallRats
+testCharacter

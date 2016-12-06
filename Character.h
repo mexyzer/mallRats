@@ -1,11 +1,18 @@
+#ifndef _CHARACTER_H_
+#define _CHARACTER_H_
+
 #include <string>
 #include <vector>
 #include <iostream>
 
 #include <SFML/Graphics.hpp>
-#include "InventoryItem.h"
+//#include "InventoryItem.h"
 
 using namespace std;
+
+enum charState	{ STAND, WALK, RUN, JUMP };
+enum charDir	{ LEFT, RIGHT };
+enum charAct	{ NONE, JUMPED, ITEM, HIT };
 
 class Character
 {
@@ -16,7 +23,16 @@ class Character
 					float height, float width );
 		~Character();	// Destructor
 
-		void Update();		// Update sprite, position, direction, etc.
+		void Update( charState state, charDir dir, charAct action ); // Update sprite, position, direction, etc.
+		
+		float x();
+		float y();
+		float top();
+		float bottom();
+		float left();
+		float right();
+
+		sf::Sprite getSprite();
 
 	protected:
 		void setPosition( float x, float y );
@@ -24,24 +40,27 @@ class Character
 
 	private:
 		float weight_;
+		float walkSpeed_;
+		float runSpeed_;
 
 		float hitHeight_;
 		float hitWidth_;
+
+		int texIter_;
+
+		charState prevState_;
+		charDir prevDir_;
+		charAct prevAct_;
 		
 		sf::Sprite sprite_;
 		vector<sf::Texture> standTextures_;
 		vector<sf::Texture> walkTextures_;
 		vector<sf::Texture> jumpTextures_;
 
-		float x();
-		float y();
-		float top();
-		float bottom();
-		float left();
-		float right();
-		
 		void setHitBox( float height, float width );
-		void updateSprite();
-		void updatePosition();
+		void updateSprite( charState state, charDir dir, charAct action );
+		void updatePosition( charState state, charDir dir );
 		void loadTextures( string inFile );
 };
+
+#endif
